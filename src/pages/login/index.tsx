@@ -1,7 +1,8 @@
 import { GetServerSideProps } from 'next';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-const LoginPage = ({ _props }: any) => {
+const LoginPage = ({ result }: any) => {
+  console.log('result: ', result);
   const [data, setData] = useState();
   const fetchAuthUser = async () => {
     window.location.replace('http://localhost:3000');
@@ -32,6 +33,16 @@ export default LoginPage;
 
 export const getServerSideProps: GetServerSideProps<any> = async (context) => {
   try {
+    let response = await fetch('http://localhost:3000/api/auth/route', {
+      method: 'GET',
+    });
+    const result = await response.json();
+
+    return {
+      props: {
+        result,
+      },
+    };
   } catch (err) {
     return {
       redirect: {
@@ -41,9 +52,9 @@ export const getServerSideProps: GetServerSideProps<any> = async (context) => {
     };
   }
 
-  return {
-    props: {
-      user: 'tuong',
-    },
-  };
+  // return {
+  //   props: {
+  //     user: 'tuong',
+  //   },
+  // };
 };
