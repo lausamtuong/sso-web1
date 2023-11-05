@@ -1,10 +1,11 @@
 import Image from 'next/image';
 import { Inter } from 'next/font/google';
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
-import { useEffect } from 'react';
+import { LOCAL_HOST_URL } from './login';
+import axios from 'axios';
+import { getCookie } from '@/lib/cookie';
 // import { useAuth } from '@/modules/auth/AuthProvider';
 
-const inter = Inter({ subsets: ['latin'] });
 export interface User {
   id: number;
   username: string;
@@ -19,7 +20,8 @@ export interface User {
 export default function Home(
   _props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) {
-  return <div>{_props.user}</div>;
+  console.log(_props.user);
+  return <div>{_props.user.result.username}</div>;
 }
 export const getServerSideProps: GetServerSideProps<any> = async (context) => {
   try {
@@ -31,7 +33,18 @@ export const getServerSideProps: GetServerSideProps<any> = async (context) => {
         },
       };
     }
+    const email = context.req.cookies['email'];
+    let response = await axios.get(
+      `${LOCAL_HOST_URL}/api/auth/route?email=${email}`
+    );
+    const result = await response.data;
+    return {
+      props: {
+        user: result,
+      },
+    };
   } catch (err) {
+    console.log(err);
     return {
       redirect: {
         permanent: false,
@@ -39,10 +52,4 @@ export const getServerSideProps: GetServerSideProps<any> = async (context) => {
       },
     };
   }
-
-  return {
-    props: {
-      user: 'tuong',
-    },
-  };
 };

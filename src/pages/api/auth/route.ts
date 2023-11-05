@@ -18,9 +18,10 @@ export default async function handler(
 
     switch (req.method) {
       case 'GET':
+        console.log(req.query.email);
         const result = await db
           .collection('user')
-          .findOne({ username: 'admin' });
+          .findOne({ email: req.query.email });
         res.status(200).json({ status: 200, message: 'Success', result });
         break;
       default:
