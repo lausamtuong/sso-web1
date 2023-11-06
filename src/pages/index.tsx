@@ -4,6 +4,7 @@ import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { LOCAL_HOST_URL } from './login';
 import axios from 'axios';
 import { getCookie } from '@/lib/cookie';
+import { jwtDecode } from 'jwt-decode';
 // import { useAuth } from '@/modules/auth/AuthProvider';
 
 interface User {
@@ -47,7 +48,9 @@ export default function Home(
 }
 export const getServerSideProps: GetServerSideProps<any> = async (context) => {
   try {
-    if (!context.req.cookies['isAuthen']) {
+    const token = context.req.cookies['SAML_ASSERTION'];
+    const data: any = jwtDecode(String(token));
+    if (!data.isAuthen) {
       return {
         redirect: {
           permanent: false,
@@ -55,9 +58,8 @@ export const getServerSideProps: GetServerSideProps<any> = async (context) => {
         },
       };
     }
-    const email = context.req.cookies['email'];
     let response = await axios.get(
-      `${LOCAL_HOST_URL}/api/auth/route?email=${email}`
+      `${LOCAL_HOST_URL}/api/auth/route?email=${data.email}`
     );
     const result = await response.data;
     return {
