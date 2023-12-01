@@ -13,14 +13,17 @@ interface User {
   role: string;
 }
 const LoginPage = ({ result }: any) => {
-  console.log('result: ', result);
+  // console.log('result: ', result);
   const [data, setData] = useState();
   const fetchAuthUser = async () => {
     window.location.replace('http://localhost:3001');
   };
+
+  //User rePuest to SP
   const redirectToSSO = async () => {
     let timer: NodeJS.Timeout | null = null;
     const loginURL = `${SAML_URL}?redirectURL=${LOCAL_HOST_URL}/login/success`;
+    //User connect to Identity Provider
     const newWindow = window.open(loginURL, '_blank', 'width=500,height=600');
     if (newWindow) {
       timer = setInterval(() => {
@@ -50,32 +53,3 @@ const LoginPage = ({ result }: any) => {
   );
 };
 export default LoginPage;
-
-// export const getServerSideProps: GetServerSideProps<any> = async (context) => {
-//   try {
-//     let response = await fetch(`${LOCAL_HOST_URL}/api/auth/route`, {
-//       method: 'GET',
-//     });
-//     const result = await response.json();
-
-//     return {
-//       props: {
-//         result,
-//       },
-//     };
-//   } catch (err) {
-//     console.log(err);
-//     return {
-//       redirect: {
-//         permanent: false,
-//         destination: '/auth/login',
-//       },
-//     };
-//   }
-
-//   // return {
-//   //   props: {
-//   //     user: 'tuong',
-//   //   },
-//   // };
-// };

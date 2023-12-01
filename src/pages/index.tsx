@@ -48,8 +48,11 @@ export default function Home(
 }
 export const getServerSideProps: GetServerSideProps<any> = async (context) => {
   try {
+    //Recieve and decode token from SAML Response
     const token = context.req.cookies['SAML_ASSERTION'];
     const data: any = jwtDecode(String(token));
+    // If No 
+    // Authenticated redirect to login
     if (!data.isAuthen) {
       return {
         redirect: {
@@ -58,6 +61,8 @@ export const getServerSideProps: GetServerSideProps<any> = async (context) => {
         },
       };
     }
+    // If Yes
+    // Send SamlResponse to Service Provider
     let response = await axios.get(
       `${LOCAL_HOST_URL}/api/auth/route?email=${data.email}`
     );
