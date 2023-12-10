@@ -13,14 +13,17 @@ interface User {
   role: string;
 }
 const LoginPage = ({ result }: any) => {
-  console.log('result: ', result);
+  // console.log('result: ', result);
   const [data, setData] = useState();
   const fetchAuthUser = async () => {
     window.location.replace(LOCAL_HOST_URL);
   };
+
+  //User rePuest to SP
   const redirectToSSO = async () => {
     let timer: NodeJS.Timeout | null = null;
     const loginURL = `${SAML_URL}?redirectURL=${LOCAL_HOST_URL}/login/success`;
+    //User connect to Identity Provider
     const newWindow = window.open(loginURL, '_blank', 'width=500,height=600');
     if (newWindow) {
       timer = setInterval(() => {
