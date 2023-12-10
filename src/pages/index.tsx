@@ -21,7 +21,10 @@ export default function Home(
   const userInfo: User = _props.user.result;
   console.log(_props.user);
   return (
-    <div className="flex justify-center items-center h-screen w-screen">
+    <div className="flex flex-col gap-4 justify-center items-center h-screen w-screen">
+      <h1 className="font-bold text-2xl">
+        Domain Application 1: localhost:3001
+      </h1>
       <div className="flex gap-2">
         <Image alt="avt" src={userInfo.avatar} width={250} height={200} />
         <div className="flex flex-col gap-3">
@@ -48,23 +51,31 @@ export default function Home(
 }
 export const getServerSideProps: GetServerSideProps<any> = async (context) => {
   try {
-    const token = context.req.cookies['SAML_ASSERTION'];
-    const data: any = jwtDecode(String(token));
-    if (!data.isAuthen) {
+    if (context.req.cookies['SAML_ASSERTION']) {
+      const token = context.req.cookies['SAML_ASSERTION'];
+      const data: any = jwtDecode(String(token));
+      if (!data.isAuthen) {
+        return {
+          redirect: {
+            permanent: false,
+            destination: '/login',
+          },
+        };
+      }
+      let response = await axios.get(
+        `${LOCAL_HOST_URL}/api/auth/route?email=${data.email}`
+      );
+      const result = await response.data;
       return {
-        redirect: {
-          permanent: false,
-          destination: '/login',
+        props: {
+          user: result,
         },
       };
     }
-    let response = await axios.get(
-      `${LOCAL_HOST_URL}/api/auth/route?email=${data.email}`
-    );
-    const result = await response.data;
     return {
-      props: {
-        user: result,
+      redirect: {
+        permanent: false,
+        destination: '/login',
       },
     };
   } catch (err) {
@@ -72,7 +83,7 @@ export const getServerSideProps: GetServerSideProps<any> = async (context) => {
     return {
       redirect: {
         permanent: false,
-        destination: '/auth/login',
+        destination: '/login',
       },
     };
   }
